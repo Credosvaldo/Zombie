@@ -1,0 +1,2 @@
+D:\Programacao\Unity\Projetos\Zombie\obj\Debug\Unity.InternalAPIEditorBridge.001.csproj.AssemblyReference.cache
+D:\Programacao\Unity\Projetos\Zombie\obj\Debug\Unity.InternalAPIEditorBridge.001.csproj.CoreCompileInputs.cache

@@ -1,0 +1,1 @@
+D:\Programacao\Unity\Projetos\Zombie\obj\Debug\UnityEditor.TestRunner.csproj.CoreCompileInputs.cache

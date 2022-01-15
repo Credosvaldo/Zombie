@@ -1,0 +1,2 @@
+D:\Programacao\Unity\Projetos\Zombie\obj\Debug\NavMeshComponentsEditor.csproj.AssemblyReference.cache
+D:\Programacao\Unity\Projetos\Zombie\obj\Debug\NavMeshComponentsEditor.csproj.CoreCompileInputs.cache

@@ -1,0 +1,1 @@
+D:\Programacao\Unity\Projetos\Zombie\obj\Debug\Unity.RenderPipeline.Universal.ShaderLibrary.csproj.CoreCompileInputs.cache

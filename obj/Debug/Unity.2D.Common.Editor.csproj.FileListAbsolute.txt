@@ -1,0 +1,2 @@
+D:\Programacao\Unity\Projetos\Zombie\obj\Debug\Unity.2D.Common.Editor.csproj.CoreCompileInputs.cache
+D:\Programacao\Unity\Projetos\Zombie\obj\Debug\Unity.2D.Common.Editor.csproj.AssemblyReference.cache
