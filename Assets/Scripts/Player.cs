@@ -109,7 +109,6 @@ namespace MyGame
             state = State.stand;
             //slider_lootBoxTime.value = 0;
             slider_lootBoxTime.gameObject.SetActive(false);
-            int a = 0;
 
         }
 
@@ -213,6 +212,7 @@ namespace MyGame
                 equipped = Equipped.knife;
             }
 
+            anim.SetBool("Reload", false);
             
             if (!gun[equipped].have)
                 TrocarArma();
