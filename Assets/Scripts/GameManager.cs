@@ -18,10 +18,12 @@ namespace MyGame
         public Slider slider_LootBoxTime;
         public Button botao_TrocarArma;
         public Button botao_Reload;
+        public GameObject[] panel;
         public GunUI selectedGun;
+        public int zombiesInScene;
         [System.NonSerialized] public GameObject[] livePlayerList;
         [System.NonSerialized] public GameObject[] deadPlayerList;
-        public int zombiesInScene;
+        [System.NonSerialized] public Player myPlayer;
 
         #endregion
 
@@ -31,6 +33,7 @@ namespace MyGame
         [SerializeField] GameObject[] desativar;
         [SerializeField] GameObject[] ativar;
         [SerializeField] GameObject pahfinder;
+        [SerializeField] InventoryPanel inventario;
         [SerializeField] float spawnRate;
         [SerializeField] PolygonCollider2D circle;
         [SerializeField] int maxZombies;
@@ -40,22 +43,23 @@ namespace MyGame
 
         #region Private
         Vector2[] pos = new Vector2[148];
-        Player myPlayer;
         #endregion
 
         void Awake()
         {
+
             if(!PhotonNetwork.IsConnected)
             {
                 SceneManager.LoadScene(0);
             }
 
-            foreach(GameObject d in desativar)
+            foreach (GameObject d in desativar)
             {
                 d.SetActive(false);
+                Destroy(d);
             }
-            
-            foreach(GameObject a in ativar)
+
+            foreach (GameObject a in ativar)
             {
                 a.SetActive(true);
             }
@@ -72,6 +76,7 @@ namespace MyGame
         void Start()
         {
             PhotonNetwork.RunRpcCoroutines = true;
+            ChangePanel(true);
             CriarJogador();
             if (PhotonNetwork.IsMasterClient)
             {
@@ -88,7 +93,7 @@ namespace MyGame
         void CriarJogador()
         {
             myPlayer = PhotonNetwork.Instantiate(local_PlayerPrefab, Vector3.zero, Quaternion.identity).GetComponent<Player>();
-            photonView.RPC("AtualizarPlayerList", RpcTarget.All);
+            photonView.RPC("AtualizarPlayerList", RpcTarget.AllBuffered);
 
         }
 
@@ -119,6 +124,14 @@ namespace MyGame
         public void Reload() => myPlayer.AnimReload();
 
         public void Usar() => myPlayer.Usar();
+
+        public void ChangePanel(bool movePanel)
+        {
+            panel[0].SetActive(movePanel);
+            panel[1].SetActive(!movePanel);
+            inventario.AtualizarInventario();
+            
+        }
 
     }
 }

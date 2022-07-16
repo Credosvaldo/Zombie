@@ -99,7 +99,6 @@ namespace MyGame
         #region Override Photon
         public override void OnConnectedToMaster()
         {
-            BancoDeDados.Load();
             CarregarPainel();
         }
 

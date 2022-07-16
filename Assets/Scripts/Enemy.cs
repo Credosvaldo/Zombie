@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Pathfinding;
+using UnityEngine.AI;
 using Photon.Pun;
 
 
@@ -74,7 +74,7 @@ namespace MyGame
 
         #region Private
         Transform destino;
-        AIPath agent;
+        NavMeshAgent agent;
         Animator anim;
         float timepass;
         #endregion
@@ -85,14 +85,21 @@ namespace MyGame
             colisorDano = transform.GetChild(0).gameObject;
             colisorDano.SetActive(false);
 
+            agent = GetComponent<NavMeshAgent>();
+
+            agent.updateRotation = false;
+            agent.updateUpAxis = false;
+            transform.eulerAngles = Vector3.zero;
+
             if (!photonView.IsMine)
                 return;
 
             rig = GetComponent<Rigidbody2D>();
-            agent = GetComponent<AIPath>();
+
             anim = GetComponent<Animator>();
 
             InvokeRepeating("SetDestinaition", 0, 1);
+            Debug.Log("Numero de Player: " + GameManager.instancia.livePlayerList);
         }
 
         void Update()
@@ -107,7 +114,11 @@ namespace MyGame
                 return;
             }
 
-            agent.destination = destino.position;
+            agent.SetDestination(destino.position);
+
+            Vector2 direction = new Vector2(destino.position.x - transform.position.x, destino.position.y - transform.position.y);
+            transform.up = direction;
+
 
             bool perto = Vector2.Distance(transform.position, destino.position) < 1;
 

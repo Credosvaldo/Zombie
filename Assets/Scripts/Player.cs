@@ -17,6 +17,13 @@ namespace MyGame
         shotgun,
     }
 
+    public enum Other
+    {
+        granade,
+        map,
+        medkit,
+    }
+
     public enum State
     {
         stand,
@@ -32,7 +39,7 @@ namespace MyGame
         public Text ammo;
     }
 
-
+    
     [System.Serializable]
     public class Gun
     {
@@ -48,6 +55,21 @@ namespace MyGame
     {
         #region Public
         [System.NonSerialized]public Animator anim;
+
+        public Dictionary<Equipped, Gun> gun = new Dictionary<Equipped, Gun> {
+            { Equipped.knife, new Gun() },
+            { Equipped.pistol, new Gun() },
+            { Equipped.rifle, new Gun() },
+            { Equipped.shotgun, new Gun() }
+        };
+
+        public Dictionary<Other, int> other = new Dictionary<Other, int>
+        {
+            {Other.granade, 0},
+            {Other.map, 0},
+            {Other.medkit, 0},
+        };
+
         #endregion
 
         #region Serialized
@@ -58,12 +80,6 @@ namespace MyGame
         [SerializeField] Image lifeBar;
         [SerializeField] float smoothLifeBar;
         [SerializeField] Sprite[] gunSprites;
-        [SerializeField] Dictionary<Equipped, Gun> gun = new Dictionary<Equipped, Gun> {
-            { Equipped.knife, new Gun() },
-            { Equipped.pistol, new Gun() },
-            { Equipped.rifle, new Gun() },
-            { Equipped.shotgun, new Gun() }
-        };
         [SerializeField] LayerMask layerBox;
 
         #endregion
@@ -111,7 +127,7 @@ namespace MyGame
             slider_lootBoxTime.gameObject.SetActive(false);
 
         }
-
+        
         void GunTemporaria()
         {
             gun[Equipped.knife].have = true;
@@ -135,6 +151,7 @@ namespace MyGame
             gun[Equipped.shotgun].maxInShell = 6;
 
         }
+        
 
         void Update()
         {
@@ -273,6 +290,9 @@ namespace MyGame
 
         public void EndOfAnimation()
         {
+            if (!photonView.IsMine)
+                return;
+
             state = State.stand;
             anim.SetBool("Shoot", false);
             anim.SetBool("Reload", false);
@@ -331,7 +351,7 @@ namespace MyGame
             }
 
         }
-        
+
         protected override void OnTriggerEnter2D(Collider2D collision)
         {
             base.OnTriggerEnter2D(collision);

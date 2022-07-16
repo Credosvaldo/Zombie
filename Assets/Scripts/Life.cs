@@ -32,7 +32,6 @@ namespace MyGame
         [PunRPC]
         protected void TirarVida()
         {
-            Debug.Log(gameObject.name + " perdeu vida");
             life -= dano;
 
             if (life <= 0)
@@ -42,15 +41,15 @@ namespace MyGame
 
         void Death()
         {
-            PhotonNetwork.Destroy(gameObject);
-            //POR FAVOR OTIMIZA ISSO LOGOOOOOOOOO
             if(GetComponent<Player>() != null)
             {
-                GameManager.instancia.zombiesInScene--;
+                GameManager.instancia.photonView.RPC("AtualizarPlayerList", RpcTarget.All);
+                gameObject.SetActive(false);
             }
             else
             {
-                GameManager.instancia.photonView.RPC("AtualizarPlayerList", RpcTarget.All);
+                GameManager.instancia.zombiesInScene--;
+                PhotonNetwork.Destroy(gameObject);
             }
 
         }

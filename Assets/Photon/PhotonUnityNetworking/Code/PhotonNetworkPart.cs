@@ -470,6 +470,7 @@ namespace Photon.Pun
             for (int componentsIndex = 0; componentsIndex < photonNetview.RpcMonoBehaviours.Length; componentsIndex++)
             {
                 MonoBehaviour monob = photonNetview.RpcMonoBehaviours[componentsIndex];
+                //Debug.Log(monob.name);
                 if (monob == null)
                 {
                     Debug.LogError("ERROR You have missing MonoBehaviours on your gameobjects!");
