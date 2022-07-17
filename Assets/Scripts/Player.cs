@@ -356,6 +356,46 @@ namespace MyGame
         {
             base.OnTriggerEnter2D(collision);
 
+            if(collision.CompareTag("Item"))
+            {
+                photonView.RPC("GetDropedItem", RpcTarget.AllViaServer, collision);
+            }
+
+        }
+
+        [PunRPC]
+        void GetDropedItem(Collider2D collision)
+        {
+            DropedItem item = collision.GetComponent<DropedItem>();
+
+            if (item == null)
+                return;
+
+            Destroy(collision.gameObject);
+
+            if (!photonView.IsMine)
+                return;
+
+            int ind = item.indice;
+
+            if (ind < 4 && !gun[(Equipped)(ind)].have)
+            {
+                gun[(Equipped)(ind)].have = true;
+            }
+            else if (ind < 7)
+            {
+                gun[(Equipped)(ind - 3)].allBullets += item.quantidade;
+            }
+            else if (ind < 10)
+            {
+                other[(Other)(ind - 7)] += item.quantidade;
+            }
+            else
+            {
+                Debug.LogError("Como assim meno ta dando numero maior q 9 viado");
+            }
+
+            AtualizarGunUI();
         }
 
         void OnTriggerStay2D(Collider2D collision)

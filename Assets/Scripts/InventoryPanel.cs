@@ -4,6 +4,13 @@ using TMPro;
 
 namespace MyGame
 {
+    public enum Item
+    {
+        gun,
+        bullets,
+        other,
+    }
+
     public class InventoryPanel : MonoBehaviour
     {
         private Player myPlayer;
@@ -12,49 +19,74 @@ namespace MyGame
         [SerializeField] private ExampleSlot exampleSlot;
         [SerializeField] private GameObject[] botoes;
         [SerializeField] private Pair[] gunSprite;
+        [SerializeField] private GameObject drop_Panel;
+        [SerializeField] private Slider drop_Slider;
+        [SerializeField] private Image drop_Image;
 
         [SerializeField] private Image[] slotGuns;
         [SerializeField] private Text[] slotBullets;
         [SerializeField] private Text[] slotOthers;
 
+        public void MyPlayer(Player myPlayer)
+        {
+            this.myPlayer = myPlayer;
+        }
 
         public void AtualizarInventario()
         {
             //Guns
             for(int i = 0; i < 3; i++)
             {
-                slotGuns[i].sprite = GameManager.instancia.myPlayer.gun[(Equipped)(i+1)].have ? gunSprite[i].com : gunSprite[i].sem;
+                slotGuns[i].sprite = HaveIt(i+1) ? gunSprite[i].com : gunSprite[i].sem;
             }
 
             //Bullets
             for(int i = 0; i < 3; i++)
             {
-                slotBullets[i].text = "x" + GameManager.instancia.myPlayer.gun[(Equipped)(i + 1)].allBullets;
+                slotBullets[i].text = "x" + myPlayer.gun[(Equipped)(i + 1)].allBullets;
             }
 
             //Others
             for (int i = 0; i < 3; i++)
             {
-                slotOthers[i].text = "x" + GameManager.instancia.myPlayer.other[(Other)i];
+                slotOthers[i].text = "x" + myPlayer.other[(Other)i];
             }
-            
+
+            AtualizarBotaoDrop();
 
         }
 
+        void AtualizarBotaoDrop()
+        {
+            bool have = HaveIt(exampleSlot.indice);
+
+            botoes[1].SetActive(have);
+
+            if(exampleSlot.indice > 6)
+            {
+                botoes[0].SetActive(have);
+            }
+
+        }
 
         public void OnClick(int ind)
         {
-            exampleSlot.description.text = slots[ind].description;
+            exampleSlot.description.text = slots[ind].name + "\n\n" + slots[ind].description;
             exampleSlot.image.sprite = slots[ind].image;
+            exampleSlot.indice = ind;
 
             //Usar Dropar Sair
             botoes[0].SetActive(slots[ind].usavel);
-            botoes[1].SetActive(slots[ind].dropavel);
+
+            AtualizarBotaoDrop();
 
         }
 
         public void OnClickDo(int ind)
         {
+
+            int indice = exampleSlot.indice;
+
             switch (ind)
             {
                 case 1://Usar
@@ -64,20 +96,72 @@ namespace MyGame
                     break;
 
                 case 2://Dropar
-                    //diminuir um item no player e no painel
-                    //colocalo no chao em forma de item
+                    if(indice < 4)//dropar a arma em si
+                    {
+                        myPlayer.gun[(Equipped)indice].have = false;
+                        //ela cair no chao
+                        break;
+                    }
 
-                    //EXTRA: pegar item do chao
+                    drop_Panel.SetActive(true);
+                    drop_Image.sprite = exampleSlot.image.sprite;
+                    
+                    if(exampleSlot.indice < 7)
+                    {
+                        drop_Slider.maxValue = myPlayer.gun[(Equipped)(indice-3)].allBullets;
+                        break;
+                    }
+
+                    drop_Slider.maxValue = myPlayer.other[(Other)(indice - 7)];
                     break;
 
                 case 3://Sair
                     GameManager.instancia.ChangePanel(true);
                     break;
 
+                case 21://Dropar em si
+                    if(indice < 7)
+                    {
+                        myPlayer.gun[(Equipped)(indice - 3)].allBullets -= (int)drop_Slider.value;
+                        //falta jogar no chao
+                        drop_Panel.SetActive(false);
+                        break;
+                    }
+
+                    myPlayer.other[(Other)(indice - 7)] -= (int)drop_Slider.value;
+                    //falta jogar no chao
+                    drop_Panel.SetActive(false);
+
+                    break;
+
+                case 22://Fechar painel de drop
+                    drop_Panel.SetActive(false);
+                    break;
+
             }
+
+            AtualizarInventario();
 
 
         }
+
+        bool HaveIt(int ind)
+        {
+            if (exampleSlot.indice < 4)//Guns
+            {
+                return myPlayer.gun[(Equipped)(exampleSlot.indice)].have;
+            }
+            else if (exampleSlot.indice < 7)//Bullets
+            {
+                return myPlayer.gun[(Equipped)(exampleSlot.indice - 3)].allBullets > 0;
+            }
+            else//Others
+            {
+                return myPlayer.other[(Other)(exampleSlot.indice - 7)] > 0;
+            }
+
+        }
+
 
     }
 
@@ -98,6 +182,7 @@ namespace MyGame
     {
         public TextMeshProUGUI description;
         public Image image;
+        public int indice;
 
     }
 

@@ -76,8 +76,9 @@ namespace MyGame
         void Start()
         {
             PhotonNetwork.RunRpcCoroutines = true;
-            ChangePanel(true);
             CriarJogador();
+            ChangePanel(true);
+
             if (PhotonNetwork.IsMasterClient)
             {
                 Instantiate(pahfinder);
@@ -93,6 +94,7 @@ namespace MyGame
         void CriarJogador()
         {
             myPlayer = PhotonNetwork.Instantiate(local_PlayerPrefab, Vector3.zero, Quaternion.identity).GetComponent<Player>();
+            inventario.MyPlayer(myPlayer);
             photonView.RPC("AtualizarPlayerList", RpcTarget.AllBuffered);
 
         }
