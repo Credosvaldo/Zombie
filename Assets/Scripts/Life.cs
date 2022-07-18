@@ -25,6 +25,7 @@ namespace MyGame
             if(collision.CompareTag(tagDano))
             {
                 gameObject.GetPhotonView().RPC("TirarVida", RpcTarget.All);
+                //TirarVida();
             }
 
         }

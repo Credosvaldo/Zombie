@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using Photon.Pun;
 
 namespace MyGame
 {
@@ -13,9 +14,8 @@ namespace MyGame
 
     public class InventoryPanel : MonoBehaviour
     {
-        private Player myPlayer;
+        public Slot[] slots;
 
-        [SerializeField] private Slot[] slots;
         [SerializeField] private ExampleSlot exampleSlot;
         [SerializeField] private GameObject[] botoes;
         [SerializeField] private Pair[] gunSprite;
@@ -27,6 +27,8 @@ namespace MyGame
         [SerializeField] private Text[] slotBullets;
         [SerializeField] private Text[] slotOthers;
 
+        private Player myPlayer;
+
         public void MyPlayer(Player myPlayer)
         {
             this.myPlayer = myPlayer;
@@ -35,9 +37,9 @@ namespace MyGame
         public void AtualizarInventario()
         {
             //Guns
-            for(int i = 0; i < 3; i++)
+            for (int i = 0; i < 3; i++)
             {
-                slotGuns[i].sprite = HaveIt(i+1) ? gunSprite[i].com : gunSprite[i].sem;
+                slotGuns[i].sprite = myPlayer.gun[(Equipped)(i+1)].have ? gunSprite[i].com : gunSprite[i].sem;
             }
 
             //Bullets
@@ -58,6 +60,12 @@ namespace MyGame
 
         void AtualizarBotaoDrop()
         {
+            if(exampleSlot.indice == 0)
+            {
+                botoes[1].SetActive(false);
+                return;
+            }
+
             bool have = HaveIt(exampleSlot.indice);
 
             botoes[1].SetActive(have);
@@ -84,7 +92,6 @@ namespace MyGame
 
         public void OnClickDo(int ind)
         {
-
             int indice = exampleSlot.indice;
 
             switch (ind)
@@ -99,7 +106,13 @@ namespace MyGame
                     if(indice < 4)//dropar a arma em si
                     {
                         myPlayer.gun[(Equipped)indice].have = false;
-                        //ela cair no chao
+                        Drop(indice, 1);
+
+                        if((int)myPlayer.equipped == indice)
+                        {
+                            myPlayer.TrocarArma();
+                        }
+
                         break;
                     }
 
@@ -123,7 +136,7 @@ namespace MyGame
                     if(indice < 7)
                     {
                         myPlayer.gun[(Equipped)(indice - 3)].allBullets -= (int)drop_Slider.value;
-                        //falta jogar no chao
+                        Drop(indice, (int)drop_Slider.value);
                         drop_Panel.SetActive(false);
                         break;
                     }
@@ -143,6 +156,11 @@ namespace MyGame
             AtualizarInventario();
 
 
+        }
+
+        void Drop(int indice, int quantidade)
+        {
+            PhotonNetwork.Instantiate("DropedItem", myPlayer.transform.position, Quaternion.identity).GetPhotonView().RPC("SetUp", RpcTarget.All, indice, quantidade, myPlayer.GetInstanceID());
         }
 
         bool HaveIt(int ind)

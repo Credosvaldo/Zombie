@@ -21,6 +21,7 @@ namespace MyGame
         public GameObject[] panel;
         public GunUI selectedGun;
         public int zombiesInScene;
+        public InventoryPanel inventario;
         [System.NonSerialized] public GameObject[] livePlayerList;
         [System.NonSerialized] public GameObject[] deadPlayerList;
         [System.NonSerialized] public Player myPlayer;
@@ -33,7 +34,6 @@ namespace MyGame
         [SerializeField] GameObject[] desativar;
         [SerializeField] GameObject[] ativar;
         [SerializeField] GameObject pahfinder;
-        [SerializeField] InventoryPanel inventario;
         [SerializeField] float spawnRate;
         [SerializeField] PolygonCollider2D circle;
         [SerializeField] int maxZombies;

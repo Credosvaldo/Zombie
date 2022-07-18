@@ -54,7 +54,8 @@ namespace MyGame
     public class Player : Life
     {
         #region Public
-        [System.NonSerialized]public Animator anim;
+        [System.NonSerialized] public Animator anim;
+        [System.NonSerialized] public Equipped equipped;
 
         public Dictionary<Equipped, Gun> gun = new Dictionary<Equipped, Gun> {
             { Equipped.knife, new Gun() },
@@ -96,7 +97,6 @@ namespace MyGame
         float timeToShotter;
         bool openingBox;
         GunUI selectedGun;
-        Equipped equipped;
         State state;
         #endregion
 
@@ -354,29 +354,19 @@ namespace MyGame
 
         protected override void OnTriggerEnter2D(Collider2D collision)
         {
+            if (!photonView.IsMine)
+                return;
+
             base.OnTriggerEnter2D(collision);
 
-            if(collision.CompareTag("Item"))
-            {
-                photonView.RPC("GetDropedItem", RpcTarget.AllViaServer, collision);
-            }
 
         }
 
         [PunRPC]
-        void GetDropedItem(Collider2D collision)
+        public void GetDropedItem(int ind, int quantidade)
         {
-            DropedItem item = collision.GetComponent<DropedItem>();
-
-            if (item == null)
-                return;
-
-            Destroy(collision.gameObject);
-
             if (!photonView.IsMine)
                 return;
-
-            int ind = item.indice;
 
             if (ind < 4 && !gun[(Equipped)(ind)].have)
             {
@@ -384,11 +374,11 @@ namespace MyGame
             }
             else if (ind < 7)
             {
-                gun[(Equipped)(ind - 3)].allBullets += item.quantidade;
+                gun[(Equipped)(ind - 3)].allBullets += quantidade;
             }
             else if (ind < 10)
             {
-                other[(Other)(ind - 7)] += item.quantidade;
+                other[(Other)(ind - 7)] += quantidade;
             }
             else
             {
@@ -397,7 +387,7 @@ namespace MyGame
 
             AtualizarGunUI();
         }
-
+       
         void OnTriggerStay2D(Collider2D collision)
         {
             if (!photonView.IsMine)
